@@ -1,6 +1,7 @@
 ﻿namespace DiscoveryProxy.Console
 {
     using System;
+    using System.Net;
     using System.ServiceModel;
     using System.ServiceModel.Discovery;
 
@@ -8,8 +9,9 @@
     {
         public static void Main()
         {
-            var probeEndpointAddress = new Uri("net.tcp://localhost:8001/Probe");
-            var announcementEndpointAddress = new Uri("net.tcp://localhost:9021/Announcement");
+            var dnsName = Dns.GetHostName();
+            var probeEndpointAddress = new Uri(string.Format("net.tcp://{0}:8001/Probe", dnsName));
+            var announcementEndpointAddress = new Uri(string.Format("net.tcp://{0}:9021/Announcement", dnsName));
 
             // Host the DiscoveryProxy service
             var proxyServiceHost = new ServiceHost(new DiscoveryProxyService());
@@ -34,6 +36,8 @@
                 proxyServiceHost.Open();
 
                 Console.WriteLine("Proxy Service started.");
+                Console.WriteLine("Probe endpoint: " + probeEndpointAddress);
+                Console.WriteLine("Announcement endpoint: " + announcementEndpointAddress);
                 Console.WriteLine();
                 Console.WriteLine("Press <ENTER> to terminate the service.");
                 Console.WriteLine();
