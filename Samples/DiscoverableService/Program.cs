@@ -14,7 +14,7 @@
             // Define the base address of the service
             var baseAddress = new Uri(string.Format("net.tcp://{0}:9002/CalculatorService/{1}", dnsName, Guid.NewGuid().ToString()));
             // Define the endpoint address where announcement messages will be sent
-            var announcementEndpointAddress = new Uri(string.Format("net.tcp://{0}:9021/Announcement", dnsName));
+            var announcementEndpointAddress = new Uri(string.Format("http://{0}:8001/Announcement", dnsName));
 
             // Create the service host
             var serviceHost = new ServiceHost(typeof(CalculatorService), baseAddress);
@@ -24,7 +24,7 @@
                 var netTcpEndpoint = serviceHost.AddServiceEndpoint(typeof(ICalculatorService), new NetTcpBinding(), string.Empty);
 
                 // Create an announcement endpoint, which points to the Announcement Endpoint hosted by the proxy service.
-                var announcementEndpoint = new AnnouncementEndpoint(new NetTcpBinding(), new EndpointAddress(announcementEndpointAddress));
+                var announcementEndpoint = new AnnouncementEndpoint(new WSHttpBinding(SecurityMode.None), new EndpointAddress(announcementEndpointAddress));
 
                 // Create a ServiceDiscoveryBehavior and add the announcement endpoint
                 var serviceDiscoveryBehavior = new ServiceDiscoveryBehavior();

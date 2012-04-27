@@ -13,8 +13,8 @@
         {
             var dnsName = Dns.GetHostName();
             // Create a DiscoveryEndpoint that points to the DiscoveryProxy
-            var probeEndpointAddress = new Uri(string.Format("net.tcp://{0}:8001/Probe", dnsName));
-            var discoveryEndpoint = new DiscoveryEndpoint(new NetTcpBinding(), new EndpointAddress(probeEndpointAddress));
+            var probeEndpointAddress = new Uri(string.Format("http://{0}:8001/Probe", dnsName));
+            var discoveryEndpoint = new DiscoveryEndpoint(new BasicHttpBinding(), new EndpointAddress(probeEndpointAddress));
 
             var discoveryClient = new DiscoveryClient(discoveryEndpoint);
 
