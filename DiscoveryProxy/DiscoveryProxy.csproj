@@ -40,8 +40,9 @@
   <ItemGroup>
     <Compile Include="AsyncResult.cs" />
     <Compile Include="DiscoveryProxyService.cs" />
-    <Compile Include="InMemoryOnlineServicesProvider.cs" />
-    <Compile Include="IOnlineServicesProvider.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="InMemoryOnlineServicesRepository.cs" />
+    <Compile Include="IOnlineServicesRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

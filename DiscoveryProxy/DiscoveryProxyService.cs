@@ -8,19 +8,22 @@
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class DiscoveryProxyService : DiscoveryProxy
     {
-        private readonly IOnlineServicesProvider _provider;
+        private readonly IOnlineServicesRepository _provider;
+        private readonly ILogger _logger;
 
         public DiscoveryProxyService()
-            :this(new InMemoryOnlineServicesProvider())
+            :this(new InMemoryOnlineServicesRepository(), new NullLogger())
         {
             
         }
 
-        public DiscoveryProxyService(IOnlineServicesProvider provider)
+        public DiscoveryProxyService(IOnlineServicesRepository provider, ILogger logger)
         {
             if (provider == null) throw new ArgumentNullException("provider");
+            if (logger == null) throw new ArgumentNullException("logger");
 
             _provider = provider;
+            _logger = logger;
         }
 
         // OnBeginOnlineAnnouncement method is called when a Hello message is received by the Proxy
@@ -28,12 +31,14 @@
                                                                   EndpointDiscoveryMetadata endpointDiscoveryMetadata,
                                                                   AsyncCallback callback, object state)
         {
-            _provider.AddOnlineService(endpointDiscoveryMetadata);
+            _logger.Log("OnBeginOnlineAnnouncement()", LogLevel.Debug);
+            _provider.Add(endpointDiscoveryMetadata);
             return new OnOnlineAnnouncementAsyncResult(callback, state);
         }
 
         protected override void OnEndOnlineAnnouncement(IAsyncResult result)
         {
+            _logger.Log("OnEndOnlineAnnouncement()", LogLevel.Debug);
             OnOnlineAnnouncementAsyncResult.End(result);
         }
 
@@ -42,12 +47,14 @@
                                                                    EndpointDiscoveryMetadata endpointDiscoveryMetadata,
                                                                    AsyncCallback callback, object state)
         {
-            _provider.RemoveOnlineService(endpointDiscoveryMetadata);
+            _logger.Log("OnBeginOfflineAnnouncement()", LogLevel.Debug);
+            _provider.Remove(endpointDiscoveryMetadata);
             return new OnOfflineAnnouncementAsyncResult(callback, state);
         }
 
         protected override void OnEndOfflineAnnouncement(IAsyncResult result)
         {
+            _logger.Log("OnEndOfflineAnnouncement()", LogLevel.Debug);
             OnOfflineAnnouncementAsyncResult.End(result);
         }
 
@@ -55,12 +62,14 @@
         protected override IAsyncResult OnBeginFind(FindRequestContext findRequestContext, AsyncCallback callback,
                                                     object state)
         {
-            _provider.MatchFromOnlineService(findRequestContext);
+            _logger.Log("OnBeginFind()", LogLevel.Debug);
+            _provider.Match(findRequestContext);
             return new OnFindAsyncResult(callback, state);
         }
 
         protected override void OnEndFind(IAsyncResult result)
         {
+            _logger.Log("OnEndFind()", LogLevel.Debug);
             OnFindAsyncResult.End(result);
         }
 
@@ -68,11 +77,13 @@
         protected override IAsyncResult OnBeginResolve(ResolveCriteria resolveCriteria, AsyncCallback callback,
                                                        object state)
         {
-            return new OnResolveAsyncResult(_provider.MatchFromOnlineService(resolveCriteria), callback, state);
+            _logger.Log("OnBeginResolve()", LogLevel.Debug);
+            return new OnResolveAsyncResult(_provider.Match(resolveCriteria), callback, state);
         }
 
         protected override EndpointDiscoveryMetadata OnEndResolve(IAsyncResult result)
         {
+            _logger.Log("OnEndResolve()", LogLevel.Debug);
             return OnResolveAsyncResult.End(result);
         }
 

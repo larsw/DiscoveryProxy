@@ -14,7 +14,8 @@
             var announcementEndpointAddress = new Uri(string.Format("net.tcp://{0}:9021/Announcement", dnsName));
 
             // Host the DiscoveryProxy service
-            var proxyServiceHost = new ServiceHost(new DiscoveryProxyService());
+            var logger = new ConsoleLogger();
+            var proxyServiceHost = new ServiceHost(new DiscoveryProxyService(new InMemoryOnlineServicesRepository(logger), logger));
 
             try
             {
